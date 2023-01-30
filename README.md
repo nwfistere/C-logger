@@ -1,4 +1,5 @@
 # How to run
 mkdir build && cd build
-cmake --build ..
-cmake .
+cmake ..
+cmake --build . [--target clean] [--clean-first]
+make test
