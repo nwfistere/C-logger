@@ -39,13 +39,17 @@ BOOST_AUTO_TEST_CASE(SetFormatTest)
 {
     std::stringstream buf("");
     std::string test_message = "Test Message";
-    unmovable_logger<std::stringstream> logr(buf);
+    unmovable_logger<std::stringstream, std::function<pid_t(void)>, std::function<gid_t(void)>> logr(buf);
 
-    logr.set_format<pid_t(void), gid_t(void)>(getpid, getgid);
+    logr.set_format("[pid(%0) gid(%1)] - %m", getpid, getgid);
+    logr.log(TRACE, "Hello!");
 
     std::cout << buf.str() << std::endl;
 
-    logr.set_format<pid_t(void), gid_t(void), char*(char*, size_t)>(getpid, getgid, getcwd);
+    buf.str(""); buf.clear();
+
+    logr.set_format("%0 %1", getpid, getgid);
+    logr.log(FATAL, "Hello!");
 
     std::cout << buf.str() << std::endl;
 
