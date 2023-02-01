@@ -75,6 +75,7 @@ static std::string get_time() {
 BOOST_AUTO_TEST_CASE(TestLogLevels)
 {
     std::unique_ptr<std::stringstream> buf = std::make_unique<std::stringstream>();
+    // 1675282613 - (770516) INFO: INFO message
     std::string fmt = "%^0 - (%^1) " + LEVEL_STR_STR + ": %^m";
     movable_logger<
     std::stringstream,

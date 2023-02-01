@@ -42,6 +42,7 @@ append(int i, std::string msg, std::tuple<Tp...>& t) {
 }
 
 enum Level {
+    NONE,
     TRACE,
     DEBUG,
     INFO,
@@ -51,6 +52,7 @@ enum Level {
 };
 
 static const std::map<Level, std::string> LevelString = {
+    { NONE, "NONE" },
     { TRACE, "TRACE" },
     { DEBUG, "DEBUG" },
     { INFO, "INFO" },
