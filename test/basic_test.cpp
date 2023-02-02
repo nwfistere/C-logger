@@ -66,7 +66,6 @@ BOOST_AUTO_TEST_CASE(SetFormatTest)
     BOOST_CHECK_EQUAL(buf.str(), expected_result.str());
 }
 
-
 static std::string get_time() {
     time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     return std::to_string(time);
@@ -106,3 +105,25 @@ BOOST_AUTO_TEST_CASE(TestLogLevels)
     BOOST_CHECK_MESSAGE(result_string.find("FATAL") != std::string::npos, "Did not find FATAL in logs");
 }
 
+BOOST_AUTO_TEST_CASE(TestLoggerGroup)
+{
+
+}
+
+// BOOST_AUTO_TEST_CASE(TestCoutMove)
+// {
+//     std::unique_ptr<std::ostream> buf = std::make_unique<std::ostream>(std::cout);
+//     // 1675282613 - (770516) INFO: INFO message
+//     std::string fmt = "%^0 - (%^1) " + LEVEL_STR_STR + ": %^m";
+
+//     movable_logger<
+//     std::ostream,
+//     std::function<std::string(void)>,
+//     std::function<pid_t(void)>>
+//     logr(std::move(buf),
+//     INFO,
+//     fmt,
+//     ([]() { return std::to_string(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())); }),
+//     getpid);
+
+// }

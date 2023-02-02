@@ -61,8 +61,10 @@ static const std::map<Level, std::string> LevelString = {
     { FATAL, "FATAL" }
 };
 
+class base_logger {};
+
 template <typename T, typename... fmt_types>
-class logger
+class logger : public base_logger
 {
 protected:
     T m_stream;
@@ -108,7 +110,7 @@ public:
             m_message.replace(pos, LEVEL_STR_STR.length(), LevelString.at(level));
         }
 
-        m_message = append(0, m_message, m_format_vars);        
+        m_message = append(0, m_message, m_format_vars);
     };
     
     // Getters and Setters
@@ -134,6 +136,14 @@ public:
     movable_logger(std::unique_ptr<T> stream, const Level& level, const std::string& fmt, fmt_types... args)
         : logger<std::unique_ptr<T>, fmt_types...>(level, fmt, args...) {
         this->m_stream = std::move(stream);
+    }
+
+    movable_logger(movable_logger && o) noexcept {
+        this->m_stream = std::move(o.m_stream);
+        this->m_level =  std::move(o.m_level);
+        this->m_format = std::move(o.m_format);
+        this->m_format_vars = std::move(o.m_format_vars);
+        this->m_message = std::move(o.m_message);
     }
 
     void log(const Level& level, const std::string& msg) override {      
