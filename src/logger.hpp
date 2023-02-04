@@ -61,7 +61,10 @@ static const std::map<Level, std::string> LevelString = {
     { FATAL, "FATAL" }
 };
 
-class base_logger {};
+class base_logger {
+public:
+    virtual void log(const Level& level, const std::string& msg) {};
+};
 
 template <typename T, typename... fmt_types>
 class logger : public base_logger
@@ -139,6 +142,7 @@ public:
     }
 
     movable_logger(movable_logger && o) noexcept {
+        std::cout << "moving" << std::endl;
         this->m_stream = std::move(o.m_stream);
         this->m_level =  std::move(o.m_level);
         this->m_format = std::move(o.m_format);
