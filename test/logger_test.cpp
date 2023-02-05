@@ -7,6 +7,8 @@
 
 #include <unistd.h>
 
+#include "unmovable_logger.hpp"
+#include "movable_logger.hpp"
 
 BOOST_AUTO_TEST_CASE(BasicTest)
 {

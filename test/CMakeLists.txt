@@ -1,3 +1,6 @@
+# For code coverage
+SET(GCC_COVERAGE_COMPILE_FLAGS -fprofile-arcs -ftest-coverage)
+
 add_executable(logger_test logger_test.cpp)
 add_executable(logger_group_test logger_group_test.cpp)
 
@@ -14,3 +17,6 @@ target_link_libraries(logger_test
 target_link_libraries(logger_group_test
     Boost::unit_test_framework
 )
+
+target_compile_options(logger_test PUBLIC ${GCC_COVERAGE_COMPILE_FLAGS})
+target_link_options(logger_test PUBLIC -lgcov --coverage)

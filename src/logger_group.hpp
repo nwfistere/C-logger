@@ -1,12 +1,14 @@
 #pragma once
 
 #include "logger.hpp"
+#include "unmovable_logger.hpp"
 #include <vector>
 
 class logger_group {
 
 private:
     std::vector<std::unique_ptr<base_logger>> m_loggers;
+    std::vector<std::shared_ptr<base_logger>> m_unmovable_loggers;
 
     logger_group() = default;
 
@@ -19,16 +21,32 @@ public:
     }
 
     void add_logger(std::unique_ptr<base_logger>& plogger) {
-        std::cout << "By reference" << std::endl;
         m_loggers.push_back(std::move(plogger));
     }
 
     void add_logger(std::unique_ptr<base_logger>&& plogger) {
-        std::cout << "By rvalue" << std::endl;
-        plogger->log(TRACE, "hi\n");
-        m_loggers.push_back(std::forward<std::unique_ptr<base_logger>>(plogger));
-        m_loggers[0]->log(TRACE, "hi\n");
+        m_loggers.push_back(std::move(plogger));
     }
+
+    template <typename T>
+    void add_logger(unmovable_logger<T>* plogger) {
+        m_loggers.push_back(std::unique_ptr<unmovable_logger<T>>(plogger));
+    }
+
+    template <typename T>
+    void add_logger(unmovable_logger<T>&& plogger) {
+        m_loggers.push_back(std::make_unique<unmovable_logger<T>>(plogger));
+    }
+
+    // void add_logger(std::initializer_list<std::unique_ptr<base_logger>&> plogger...) {
+    //     std::cout << "By init list reference" << std::endl;
+    //     for (auto& logr : plogger) {
+    //         logr->log(ERROR, "before\n");
+    //         m_loggers.push_back(std::move(logr));
+    //         logr->log(ERROR, "after\n");
+    //     }
+    //     m_loggers[0]->log(TRACE, "hi\n");
+    // }
 
     void add_logger(std::vector<std::unique_ptr<base_logger>>&& loggers) {
         if (m_loggers.empty()) {
