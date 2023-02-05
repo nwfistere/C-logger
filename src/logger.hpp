@@ -64,6 +64,15 @@ static const std::map<Level, std::string> LevelString = {
 class base_logger {
 public:
     virtual void log(const Level& level, const std::string& msg) {};
+    base_logger(base_logger&& bl) {
+        std::cout << "base_logger: moving" << std::endl;
+    }
+    base_logger(base_logger& bl) {
+        std::cout << "base_logger: copying" << std::endl;
+    }
+    base_logger() {
+        std::cout << "base_logger: constructed" << std::endl;
+    };
 };
 
 template <typename T, typename... fmt_types>
@@ -132,11 +141,11 @@ class movable_logger : public logger<std::unique_ptr<T>, fmt_types...>
 public:
     virtual ~movable_logger() = default;
 
-    movable_logger(std::unique_ptr<T> stream) : logger<std::unique_ptr<T>, fmt_types...>(TRACE) {
+    movable_logger(std::unique_ptr<T>& stream) : logger<std::unique_ptr<T>, fmt_types...>(TRACE) {
         this->m_stream = std::move(stream);
     }
 
-    movable_logger(std::unique_ptr<T> stream, const Level& level, const std::string& fmt, fmt_types... args)
+    movable_logger(std::unique_ptr<T>& stream, const Level& level, const std::string& fmt, fmt_types... args)
         : logger<std::unique_ptr<T>, fmt_types...>(level, fmt, args...) {
         this->m_stream = std::move(stream);
     }
