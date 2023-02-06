@@ -12,4 +12,4 @@ add_subdirectory(test)
 
 enable_testing()
 
-add_test(NAME LoggerTest COMMAND logTest)
+add_test(NAME LoggerTest COMMAND logger_test)

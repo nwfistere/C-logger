@@ -1,4 +1,5 @@
-#include "logger_test.hpp"
+#include <boost/test/unit_test.hpp>
+
 #include <iostream>
 #include <memory>
 #include <map>
@@ -9,6 +10,8 @@
 
 #include "unmovable_logger.hpp"
 #include "movable_logger.hpp"
+
+BOOST_AUTO_TEST_SUITE(LoggerObjectSuite)
 
 BOOST_AUTO_TEST_CASE(BasicTest)
 {
@@ -106,3 +109,5 @@ BOOST_AUTO_TEST_CASE(TestLogLevels)
     BOOST_CHECK_MESSAGE(result_string.find("ERROR") != std::string::npos, "Did not find ERROR in logs");
     BOOST_CHECK_MESSAGE(result_string.find("FATAL") != std::string::npos, "Did not find FATAL in logs");
 }
+
+BOOST_AUTO_TEST_SUITE_END()
