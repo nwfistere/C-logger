@@ -8,7 +8,6 @@ class logger_group {
 
 private:
     std::vector<std::unique_ptr<base_logger>> m_loggers;
-    std::vector<std::shared_ptr<base_logger>> m_unmovable_loggers;
 
     logger_group() = default;
 

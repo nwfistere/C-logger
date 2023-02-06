@@ -4,6 +4,9 @@ project(LOGGER)
 
 set (CMAKE_CXX_STANDARD 20)
 
+OPTION(TEST_COVERAGE "Enable test coverage" OFF)
+
+
 # add_subdirectory(src)
 add_subdirectory(test)
 
