@@ -5,9 +5,13 @@ find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
 target_include_directories(logger_test PRIVATE ${LOGGER_SOURCE_DIR}/src)
 
-
 target_link_libraries(logger_test
     Boost::unit_test_framework
+)
+
+add_test(
+    NAME test_logger_test
+    COMMAND logger_test --log_level=all
 )
 
 if (TEST_COVERAGE)

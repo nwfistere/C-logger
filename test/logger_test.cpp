@@ -10,15 +10,22 @@
 
 #include "unmovable_logger.hpp"
 #include "movable_logger.hpp"
+#include "redirect_cout.hpp"
 
 BOOST_AUTO_TEST_SUITE(LoggerObjectSuite)
 
 BOOST_AUTO_TEST_CASE(BasicTest)
 {
+    redirect_cout rcout;
 
     unmovable_logger<std::ostream> logr(&std::cout);
 
     logr.log(INFO, std::string("Starting Test\n"));
+    std::string line;
+    std::getline(rcout.cout_stream, line);
+    BOOST_CHECK_EQUAL(line, "Starting Test");
+    std::getline(rcout.cout_stream, line);
+    BOOST_CHECK_EQUAL(line, "");
 }
 
 BOOST_AUTO_TEST_CASE(StringStream)
@@ -100,6 +107,10 @@ BOOST_AUTO_TEST_CASE(TestLogLevels)
     BOOST_CHECK_MESSAGE(result_string.find("WARN") != std::string::npos, "Did not find WARN in logs");
     BOOST_CHECK_MESSAGE(result_string.find("ERROR") != std::string::npos, "Did not find ERROR in logs");
     BOOST_CHECK_MESSAGE(result_string.find("FATAL") != std::string::npos, "Did not find FATAL in logs");
+
+    BOOST_CHECK_EQUAL(logr.get_level(), INFO);
+    logr.set_level(NONE);
+    BOOST_CHECK_EQUAL(logr.get_level(), NONE);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

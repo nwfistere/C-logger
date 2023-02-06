@@ -84,15 +84,28 @@ BOOST_AUTO_TEST_CASE(UnmovableRvalue)
     logger_group::get().add_logger<std::ostream>(unmovable_logger<std::ostream>(&std::cout, TRACE, "%^m\n"));
 
     logger_group::get().log(DEBUG, "UnmovableRvalue Test");
+
+    std::string line;
+    std::getline(rcout.cout_stream, line);
+    BOOST_CHECK_EQUAL(line, "UnmovableRvalue Test");
+    std::getline(rcout.cout_stream, line);
+    BOOST_CHECK_EQUAL(line, "");
 }
 
 BOOST_AUTO_TEST_CASE(UnmovableByReference)
 {
+    redirect_cout rcout;
     std::unique_ptr<base_logger> plogr = std::unique_ptr<base_logger>(new unmovable_logger<std::ostream>(&std::cout, TRACE, "%^m\n"));
 
     logger_group::get().add_logger(plogr);
 
     logger_group::get().log(DEBUG, "UnmovableByReference Test");
+
+    std::string line;
+    std::getline(rcout.cout_stream, line);
+    BOOST_CHECK_EQUAL(line, "UnmovableByReference Test");
+    std::getline(rcout.cout_stream, line);
+    BOOST_CHECK_EQUAL(line, "");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
