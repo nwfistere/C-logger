@@ -41,6 +41,12 @@ public:
         m_loggers.push_back(std::make_unique<unmovable_logger<T>>(plogger));
     }
 
+    void who(std::string&& rwho) {
+        for (const std::unique_ptr<base_logger>& logr : m_loggers) {
+            logr->who(std::move(rwho));
+        }
+    }
+
     void log(const Level& level, const std::string& msg) {
         for (const std::unique_ptr<base_logger>& logr : m_loggers) {
             logr->log(level, msg);
