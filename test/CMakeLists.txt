@@ -1,5 +1,5 @@
 
-add_executable(logger_test test_main.cpp logger_test.cpp logger_group_test.cpp)
+add_executable(logger_test test_main.cpp logger_test.cpp logger_group_test.cpp logger_singleton_test.cpp)
 
 find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 

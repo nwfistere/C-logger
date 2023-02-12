@@ -65,13 +65,20 @@ static const std::map<Level, std::string> LevelString = {
 class base_logger {
 protected:
     Level m_level;
-    std::string m_message;
     std::string m_who;
 public:
-    virtual void log(const Level& level, const std::string& msg) {};
-    virtual void who(std::string&& who) {
-        m_who = who;
-    };
+    virtual void log(const Level& level, const std::string& msg) = 0;
+    inline virtual void who(std::string&& who) { m_who = who; };
+
+    inline virtual void trace(const std::string& msg) { log(TRACE, msg); };
+    inline virtual void debug(const std::string& msg) { log(DEBUG, msg); };
+    inline virtual void  warn(const std::string& msg) { log(WARN,  msg); };
+    inline virtual void error(const std::string& msg) { log(ERROR, msg); };
+    inline virtual void fatal(const std::string& msg) { log(FATAL, msg); };
+
+    // Getters and Setters
+    Level get_level() { return m_level; }
+    void set_level(const Level& level) {  m_level = level; }
 };
 
 template <typename T, typename... fmt_types>
@@ -90,11 +97,6 @@ public:
         this->m_level = level;
     };
     virtual ~logger() = default;
-    inline virtual void trace(const std::string& msg) { log(TRACE, msg); };
-    inline virtual void debug(const std::string& msg) { log(DEBUG, msg); };
-    inline virtual void  warn(const std::string& msg) { log(WARN,  msg); };
-    inline virtual void error(const std::string& msg) { log(ERROR, msg); };
-    inline virtual void fatal(const std::string& msg) { log(FATAL, msg); };
 
     void set_format(const std::string& fmt, fmt_types... args) {
         m_format = fmt;
@@ -103,36 +105,32 @@ public:
 
     virtual void log(const Level& level, const std::string& msg) {
         if (level < m_level) {
-            m_message.clear();
             return;
         }
         std::size_t pos;
 
-        m_message = m_format;
+        std::string out_message = m_format;
 
-        while ((pos = m_message.find(MESSAGE_STR)) != std::string::npos) {
-            m_message.replace(pos, MESSAGE_STR.length(), msg);
+        while ((pos = out_message.find(MESSAGE_STR)) != std::string::npos) {
+            out_message.replace(pos, MESSAGE_STR.length(), msg);
         }
 
-        while ((pos = m_message.find(LEVEL_INT_STR)) != std::string::npos) {
-            m_message.replace(pos, LEVEL_INT_STR.length(), std::to_string(level));
+        while ((pos = out_message.find(LEVEL_INT_STR)) != std::string::npos) {
+            out_message.replace(pos, LEVEL_INT_STR.length(), std::to_string(level));
         }
 
-        while ((pos = m_message.find(LEVEL_STR_STR)) != std::string::npos) {
-            m_message.replace(pos, LEVEL_STR_STR.length(), LevelString.at(level));
+        while ((pos = out_message.find(LEVEL_STR_STR)) != std::string::npos) {
+            out_message.replace(pos, LEVEL_STR_STR.length(), LevelString.at(level));
         }
 
-        while ((pos = m_message.find(WHO_STR)) != std::string::npos) {
-            m_message.replace(pos, WHO_STR.length(), this->m_who);
+        while ((pos = out_message.find(WHO_STR)) != std::string::npos) {
+            out_message.replace(pos, WHO_STR.length(), this->m_who);
         }
 
-        m_message = format_message(0, m_message, m_format_vars);
+        out_message = format_message(0, out_message, m_format_vars);
+        
+        do_log(out_message);
     };
-    
-    // Getters and Setters
-    Level get_level() { return m_level; }
 
-    // %^m is message
-    // %[0-9]+ is the return values of the functions you pass in of type fmt_types(void)
-    void set_level(const Level& level) {  m_level = level; }
+    virtual void do_log(std::string& msg) = 0;
 };

@@ -17,10 +17,8 @@ public:
         this->m_stream = stream;
     }
 
-    void log(const Level& level, const std::string& msg) override {      
-        logger<T*, fmt_types...>::log(level, msg);
-
-        *(this->m_stream) << this->m_message;
+    void do_log(std::string& msg) override {      
+        *(this->m_stream) << msg;
         this->m_stream->flush();
     };
 

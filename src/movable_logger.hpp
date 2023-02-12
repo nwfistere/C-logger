@@ -32,15 +32,9 @@ public:
         this->m_message = std::move(o.m_message);
     }
 
-    void log(const Level& level, const std::string& msg) override {
-        logger<std::unique_ptr<T>, fmt_types...>::log(level, msg);
-        *(this->m_stream) << this->m_message;
+    void do_log(std::string& msg) override {
+        *(this->m_stream) << msg;
         this->m_stream->flush();
     };
 
-    // Since the stream is moved to the logger,
-    // tests don't have access to it.
-    // This provides access. I prefer this over
-    // adding #define private public in the tests.
-    std::unique_ptr<T> get_stream() { return std::move(this->m_stream); }
 };

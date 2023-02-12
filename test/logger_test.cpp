@@ -14,8 +14,7 @@
 
 BOOST_AUTO_TEST_SUITE(LoggerObjectSuite)
 
-BOOST_AUTO_TEST_CASE(BasicTest)
-{
+BOOST_AUTO_TEST_CASE(BasicTest) {
     redirect_cout rcout;
 
     unmovable_logger<std::ostream> logr(&std::cout);
@@ -28,8 +27,7 @@ BOOST_AUTO_TEST_CASE(BasicTest)
     BOOST_CHECK_EQUAL(line, "");
 }
 
-BOOST_AUTO_TEST_CASE(StringStream)
-{
+BOOST_AUTO_TEST_CASE(StringStream) {
     std::stringstream buf("");
     std::string test_message = "Test Message";
     unmovable_logger<std::stringstream> logr(&buf);
@@ -42,8 +40,7 @@ BOOST_AUTO_TEST_CASE(StringStream)
     BOOST_CHECK_EQUAL(buf.str(), test_message);
 }
 
-BOOST_AUTO_TEST_CASE(SetFormatTest)
-{
+BOOST_AUTO_TEST_CASE(SetFormatTest) {
     std::stringstream buf;
     std::string test_message = "Hello!";
     unmovable_logger<std::stringstream, std::function<pid_t(void)>, std::function<gid_t(void)>> logr(&buf);
@@ -75,9 +72,9 @@ static std::string get_time() {
     return std::to_string(time);
 }
 
-BOOST_AUTO_TEST_CASE(TestLogLevels)
-{
+BOOST_AUTO_TEST_CASE(TestLogLevels) {
     std::unique_ptr<std::stringstream> buf = std::make_unique<std::stringstream>();
+    std::stringstream * raw_buf = buf.get();
     // 1675282613 - (770516) INFO: INFO message
     std::string fmt = "%^0 - (%^1) " + LEVEL_STR_STR + ": %^m";
     movable_logger<
@@ -98,15 +95,18 @@ BOOST_AUTO_TEST_CASE(TestLogLevels)
     logr.log(ERROR, "ERROR message\n");
     logr.log(FATAL, "FATAL message\n");
 
-    std::unique_ptr<std::stringstream> returned_buf = logr.get_stream();
-    std::string result_string = returned_buf.get()->str();
-    
-    BOOST_CHECK_MESSAGE(result_string.find("TRACE") == std::string::npos, "Found TRACE in logs");
-    BOOST_CHECK_MESSAGE(result_string.find("DEBUG") == std::string::npos, "Found DEBUG in logs");
-    BOOST_CHECK_MESSAGE(result_string.find("INFO") != std::string::npos, "Did not find INFO in logs");
-    BOOST_CHECK_MESSAGE(result_string.find("WARN") != std::string::npos, "Did not find WARN in logs");
-    BOOST_CHECK_MESSAGE(result_string.find("ERROR") != std::string::npos, "Did not find ERROR in logs");
-    BOOST_CHECK_MESSAGE(result_string.find("FATAL") != std::string::npos, "Did not find FATAL in logs");
+    std::string line;
+    std::string prefix = get_time() + " - (" + std::to_string(getpid()) + ") ";
+    std::getline(*raw_buf, line);
+    BOOST_CHECK_EQUAL(line, prefix + "INFO: INFO message");
+    std::getline(*raw_buf, line);
+    BOOST_CHECK_EQUAL(line, prefix + "WARN: WARN message");
+    std::getline(*raw_buf, line);
+    BOOST_CHECK_EQUAL(line, prefix + "ERROR: ERROR message");
+    std::getline(*raw_buf, line);
+    BOOST_CHECK_EQUAL(line, prefix + "FATAL: FATAL message");
+    std::getline(*raw_buf, line);
+    BOOST_CHECK_EQUAL(line, "");
 
     BOOST_CHECK_EQUAL(logr.get_level(), INFO);
     logr.set_level(NONE);
